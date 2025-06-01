@@ -19,7 +19,7 @@ const currentTab = computed({
 <template>
   <van-tabbar v-model="currentTab">
     <van-tabbar-item icon="wap-home-o" />
-    <van-tabbar-item icon="add-o" />
+    
     <van-tabbar-item icon="user-circle-o" />
   </van-tabbar>
 </template>

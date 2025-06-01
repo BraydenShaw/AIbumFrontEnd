@@ -1,7 +1,7 @@
 <template>
   <div class="auth-container">
-    <h2>用户登录</h2>
-    <form @submit.prevent="handleLogin">
+    <h2>用户注册</h2>
+    <form @submit.prevent="handleRegister">
       <div class="form-group">
         <label for="username">用户名:</label>
         <input type="text" id="username" v-model="username" required />
@@ -10,13 +10,17 @@
         <label for="password">密码:</label>
         <input type="password" id="password" v-model="password" required />
       </div>
+      <div class="form-group">
+        <label for="confirmPassword">确认密码:</label>
+        <input type="password" id="confirmPassword" v-model="confirmPassword" required />
+      </div>
       <button type="submit" :disabled="authStore.loading">
-        {{ authStore.loading ? '登录中...' : '登录' }}
+        {{ authStore.loading ? '注册中...' : '注册' }}
       </button>
       <p v-if="authStore.error" class="error-message">{{ authStore.error }}</p>
     </form>
     <p class="switch-auth">
-      还没有账号？<router-link to="/register">立即注册</router-link>
+      已有账号？<router-link to="/login">立即登录</router-link>
     </p>
   </div>
 </template>
@@ -24,26 +28,26 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
-import { useRouter, useRoute } from 'vue-router';
 
 const authStore = useAuthStore();
-const router = useRouter();
-const route = useRoute();
 
 const username = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 
-const handleLogin = async () => {
-  await authStore.login(username.value, password.value);
-  if (authStore.isAuthenticated) {
-    // 登录成功后，检查是否有 redirect 参数，有则跳转，否则去 Dashboard
-    const redirectPath = route.query.redirect || '/dashboard';
-    router.push(redirectPath);
+const handleRegister = async () => {
+  if (password.value !== confirmPassword.value) {
+    authStore.error = '两次输入的密码不一致！';
+    return;
   }
+  authStore.error = null; // 清除之前的错误
+  await authStore.register(username.value, password.value);
+  // 注册成功后，authStore.error 会被清除，并由 actions 负责跳转
 };
 </script>
 
 <style scoped>
+/* 注册页面样式与登录页面类似，可以共用部分样式 */
 .auth-container {
   max-width: 400px;
   margin: 50px auto;
@@ -80,13 +84,13 @@ input[type="password"] {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 16px;
-  box-sizing: border-box; /* 确保 padding 不会撑开宽度 */
+  box-sizing: border-box;
 }
 
 button[type="submit"] {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #28a745; /* 绿色按钮 */
   color: white;
   border: none;
   border-radius: 5px;
@@ -96,7 +100,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: #218838;
 }
 
 button[type="submit"]:disabled {

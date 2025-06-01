@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import PlusButtonWithList from '@/components/HomePage/add_button2.vue' // 根据你保存的路径调整
 const columnNum = ref(3)
 
 const props = defineProps({
@@ -46,10 +47,12 @@ const images = [
 </script>
 
 <template>
+  <plus-button-with-list class="absolute bottom-4 right-4" />
   <van-nav-bar :title="'相册' + albumId" left-text="返回" left-arrow @click-left="clickLeft" />
   <van-grid :column-num="columnNum" :gutter="8">
     <van-grid-item v-for="(img, index) in images" :key="index" v-lazy="img">
       <van-image :src="img" fit="contain" width="100%" />
     </van-grid-item>
   </van-grid>
+  
 </template>
