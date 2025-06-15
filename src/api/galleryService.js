@@ -65,26 +65,65 @@ export const galleryService = {
     });
   },
 
+  // /**
+  //  * 模拟删除图片
+  //  * @param {string} photoId - 图片ID
+  //  * @returns {Promise<boolean>}
+  //  */
+  // deletePhoto(photoId) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       const initialLength = mockPhotos.length;
+  //       mockPhotos = mockPhotos.filter(photo => photo.id !== photoId);
+  //       if (mockPhotos.length < initialLength) {
+  //         console.log(`Photo ${photoId} deleted successfully.`);
+  //         resolve(true);
+  //       } else {
+  //         console.warn(`Photo ${photoId} not found for deletion.`);
+  //         reject(new Error('图片不存在或无法删除！'));
+  //       }
+  //     }, 500); // 模拟网络延迟
+  //   });
+  // },
+
   /**
-   * 模拟删除图片
+   * 删除图片
    * @param {string} photoId - 图片ID
    * @returns {Promise<boolean>}
    */
-  deletePhoto(photoId) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
+  async deletePhoto(photoId) {
+    try {
+      const apiUrl = `http://localhost:8080/api/images/tags?id=${photoId}`;
+      console.log(`Attempting to delete photo via API: ${apiUrl}`);
+
+      const response = await fetch(apiUrl, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // 如果后端删除成功，也从本地模拟数据中移除，保持数据一致性
         const initialLength = mockPhotos.length;
         mockPhotos = mockPhotos.filter(photo => photo.id !== photoId);
         if (mockPhotos.length < initialLength) {
-          console.log(`Photo ${photoId} deleted successfully.`);
-          resolve(true);
+          console.log(`Photo ${photoId} deleted successfully from backend and local mock.`);
+          return true;
         } else {
-          console.warn(`Photo ${photoId} not found for deletion.`);
-          reject(new Error('图片不存在或无法删除！'));
+          // 如果后端成功但本地数据没有变化，说明本地数据可能不一致，发出警告
+          console.warn(`Photo ${photoId} deleted from backend, but not found in local mock data.`);
+          return true; // 仍然返回true，因为后端操作成功
         }
-      }, 500); // 模拟网络延迟
-    });
+      } else {
+        const errorData = await response.json();
+        console.error(`Failed to delete photo ${photoId} from backend. Status: ${response.status}, Error:`, errorData);
+        throw new Error(errorData.message || '无法删除图片，后端返回错误。');
+      }
+    } catch (error) {
+      console.error(`Error deleting photo ${photoId}:`, error);
+      throw new Error(`删除图片失败: ${error.message}`);
+    }
   },
+
+
 
   /**
    * 模拟更新图片信息（包括分类和标签）
@@ -154,20 +193,58 @@ export const galleryService = {
     });
   },
 
-  /**
-   * 模拟添加新标签 (如果标签不存在，则添加到常用标签列表)
+//   /**
+//    * 模拟添加新标签 (如果标签不存在，则添加到常用标签列表)
+//    * @param {string} tag - 标签名称
+//    * @returns {Promise<boolean>}
+//    */
+//   addPopularTag(tag) {
+//     return new Promise((resolve) => {
+//       setTimeout(() => {
+//         if (!mockTags.includes(tag)) {
+//           mockTags.push(tag);
+//           console.log(`Tag "${tag}" added to popular tags.`);
+//         }
+//         resolve(true);
+//       }, 200);
+//     });
+//   },
+// };
+/**
+   * 添加新标签 (如果标签不存在，则添加到常用标签列表)
    * @param {string} tag - 标签名称
    * @returns {Promise<boolean>}
    */
-  addPopularTag(tag) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
+  async addPopularTag(tag) {
+    try {
+      const apiUrl = `http://localhost:8080/api/tags`;
+      console.log(`Attempting to add popular tag via API: ${apiUrl} with tag: ${tag}`);
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: tag }),
+      });
+
+      if (response.ok) {
+        // 如果后端添加成功，并且本地模拟标签列表不包含该标签，则添加到本地
         if (!mockTags.includes(tag)) {
           mockTags.push(tag);
-          console.log(`Tag "${tag}" added to popular tags.`);
+          console.log(`Tag "${tag}" added successfully to backend and local mock.`);
+        } else {
+          console.log(`Tag "${tag}" already exists in local mock, backend confirmed.`);
         }
-        resolve(true);
-      }, 200);
-    });
+        return true;
+      } else {
+        const errorData = await response.json();
+        console.error(`Failed to add tag "${tag}" to backend. Status: ${response.status}, Error:`, errorData);
+        throw new Error(errorData.message || '无法添加标签，后端返回错误。');
+      }
+    } catch (error) {
+      console.error(`Error adding tag "${tag}":`, error);
+      throw new Error(`添加标签失败: ${error.message}`);
+    }
   },
 };
