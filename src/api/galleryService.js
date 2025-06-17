@@ -26,6 +26,45 @@ let mockCategories = [
 // 模拟的常用标签 (你可以从后端获取或在前端维护一个列表)
 let mockTags = ['自然', '日落', '海边', '城市', '建筑', '旅行', '家庭', '美食', '宠物', '艺术'];
 
+// export const galleryService = {
+//   /**
+//    * 模拟获取图片列表（带分页、分类和标签筛选）
+//    * @param {number} page - 页码，从1开始
+//    * @param {number} limit - 每页数量
+//    * @param {string | null} categoryId - 分类ID筛选
+//    * @param {Array<string>} tags - 标签数组筛选（AND 关系）
+//    * @returns {Promise<{photos: Array, total: number}>}
+//    */
+//   getPhotos(page = 1, limit = 10, categoryId = null, tags = []) {
+//     return new Promise((resolve) => {
+//       setTimeout(() => {
+//         let filteredPhotos = mockPhotos;
+
+//         // 按分类ID筛选
+//         if (categoryId) {
+//           filteredPhotos = filteredPhotos.filter(photo => photo.categoryId === categoryId);
+//         }
+
+//         // 按标签筛选 (AND 关系：图片必须包含所有指定的标签)
+//         if (tags && tags.length > 0) {
+//           filteredPhotos = filteredPhotos.filter(photo =>
+//             tags.every(tag => photo.tags && photo.tags.includes(tag))
+//           );
+//         }
+
+//         const startIndex = (page - 1) * limit;
+//         const endIndex = startIndex + limit;
+//         const paginatedPhotos = filteredPhotos.slice(startIndex, endIndex);
+
+//         console.log(`Fetching photos: Page ${page}, Limit ${limit}, Category: ${categoryId}, Tags: ${tags.join(', ')}. Found ${paginatedPhotos.length}`);
+//         resolve({
+//           photos: paginatedPhotos,
+//           total: filteredPhotos.length, // 注意这里是过滤后的总数
+//         });
+//       }, 800); // 模拟网络延迟
+//     });
+//   },
+
 export const galleryService = {
   /**
    * 模拟获取图片列表（带分页、分类和标签筛选）
@@ -42,6 +81,7 @@ export const galleryService = {
 
         // 按分类ID筛选
         if (categoryId) {
+          const categoryIdUrl = '/api/debug/tags/images';
           filteredPhotos = filteredPhotos.filter(photo => photo.categoryId === categoryId);
         }
 
@@ -65,6 +105,7 @@ export const galleryService = {
     });
   },
 
+  
   // /**
   //  * 模拟删除图片
   //  * @param {string} photoId - 图片ID
