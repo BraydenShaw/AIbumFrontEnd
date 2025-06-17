@@ -182,7 +182,7 @@ const uploadAllFiles = async () => {
     fileEntry.error = null;
 
     const formData = new FormData();
-    formData.append('photo', fileEntry.file); // 'photo' 是后端接口期望的字段名
+    formData.append('file', fileEntry.file); // 'photo' 是后端接口期望的字段名
 
     try {
       await uploadService.upload(formData, (event) => {
