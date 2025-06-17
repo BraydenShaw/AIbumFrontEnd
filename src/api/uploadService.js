@@ -117,7 +117,7 @@ export const uploadService = {
 
       // Use axios.post to send FormData and pass the onUploadProgress callback
       const response = await axios.post(uploadUrl, formData, {
-        headers: {
+        headers: {"token":localStorage.getItem("token"),
           // When using FormData, you usually don't need to manually set Content-Type, axios will automatically set multipart/form-data
           // 'Content-Type': 'multipart/form-data', // axios handles this automatically
         },
