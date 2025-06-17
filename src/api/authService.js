@@ -124,11 +124,11 @@ export const authService = {
         const data = await response.json();
         console.log(`User ${username} logged in successfully from backend.`, data);
         // Assuming the data returned from the backend contains a 'token' field
-        if (data) {
+        if (data.data) {
           // After successful login, you can process the data returned by the backend, e.g., save the token
           // users.set(username, { password: password, token: data.token }); // Update local mock data (optional)
-          localStorage.setItem("token", data)
-          return { token: data }; // Return the actual token from the backend
+          localStorage.setItem("token", data.data)
+          return { token: data.data }; // Return the actual token from the backend
         } else {
           // If the backend does not return a token, it is considered a failed login or incorrect response format
           throw new Error('Login successful but no valid token received.');
